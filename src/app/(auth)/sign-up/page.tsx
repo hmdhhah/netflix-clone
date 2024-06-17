@@ -5,6 +5,8 @@ import GoogleIcon from "../../../../public/google.svg"
 import Image from "next/image";
 import login from "../login/page";
 import Link from "next/link";
+import GoogleSignInButton from "@/app/components/GoogleSignInButton";
+import { GithubSignInButton } from "@/app/components/GithubSignInButton";
 
 export default function SignUp() {
   return (
@@ -33,10 +35,8 @@ export default function SignUp() {
         >Log in Now</Link>
       </div>
       <div className=" w-full flex justify-center items-center gap-x-3 mt-6 ">
-<Button variant="outline" size="icon" ><GithubIcon/></Button>
-<Button variant="outline" size="icon" >
-  <Image src={GoogleIcon} alt="google icon" className=" h-6 w-6 "/>
-  </Button>
+      <GithubSignInButton/>
+      <GoogleSignInButton/>
 
       </div>
     </div>

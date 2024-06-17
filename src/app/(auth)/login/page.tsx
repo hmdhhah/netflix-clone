@@ -4,7 +4,9 @@ import { GithubIcon } from "lucide-react";
 import GoogleIcon from "../../../../public/google.svg"
 import Image from "next/image";
 import Link from "next/link";
- 
+import { signIn } from "next-auth/react";
+import { GithubSignInButton } from "@/app/components/GithubSignInButton";
+import GoogleSignInButton from "@/app/components/GoogleSignInButton" 
 export default function login() {
   return (
     <div className="mt-24 rounded bg-black/80 py-10 px-6 md:mt-0 md:max-w-sm md:px-14 ">
@@ -33,12 +35,8 @@ export default function login() {
         </Link>
       </div>
       <div className=" w-full flex justify-center items-center gap-x-3 mt-6 ">
-        <Button variant="outline" size="icon">
-          <GithubIcon />
-        </Button>
-        <Button variant="outline" size="icon">
-          <Image src={GoogleIcon} alt="google icon" className=" h-6 w-6 " />
-        </Button>
+       <GithubSignInButton/>
+        <GoogleSignInButton/>
       </div>
     </div>
   );
