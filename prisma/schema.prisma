@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+   
+
+
+   
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Uses the environment variable for the database URL
+}
+
+// Account model definition
+model Account {
+  id                 String  @id @default(cuid()) // Unique ID using cuid()
+  userId             String  @map("user_id") // Foreign key mapping to User model
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id") // Foreign key for provider account
+  refresh_token      String? @db.Text // Optional field with Text type
+  access_token       String? @db.Text // Optional field with Text type
+  expires_at         Int? // Optional field
+  token_type         String? // Optional field
+  scope              String? // Optional field
+  id_token           String? @db.Text // Optional field with Text type
+  session_state      String? // Optional field
+  refresh_token_expires_in  Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User model with cascade delete
+
+  @@unique([provider, providerAccountId]) // Unique constraint on provider and providerAccountId
+  @@map("accounts") // Maps to the table 'accounts'
+}
+
+// Session model definition
+model Session {
+  id           String   @id @default(cuid()) // Unique ID using cuid()
+  sessionToken String   @unique @map("session_token") // Unique session token
+  userId       String   @map("user_id") // Foreign key mapping to User model
+  expires      DateTime // Expiry date and time
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User model with cascade delete
+
+  @@map("sessions") // Maps to the table 'sessions'
+}
+
+// User model definition
+model User {
+  id            String    @id @default(cuid()) // Unique ID using cuid()
+  name          String? // Optional field
+  email         String?   @unique // Unique email field
+  emailVerified DateTime? @map("email_verified") // Optional field with mapping
+  image         String? // Optional field
+  accounts      Account[] // Relation to Account model
+  sessions      Session[] // Relation to Session model
+
+  @@map("users") // Maps to the table 'users'
+}
+
+// VerificationToken model definition
+model VerificationToken {
+  identifier String // Identifier for the token
+  token      String // Token value
+  expires    DateTime // Expiry date and time
+
+  @@unique([identifier, token]) // Unique constraint on identifier and token
+  @@map("verificationtokens") // Maps to the table 'verificationtokens'
+}
