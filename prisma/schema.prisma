@@ -1,73 +1,83 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-   
-
-
-   
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL") // Uses the environment variable for the database URL
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// Account model definition
 model Account {
-  id                 String  @id @default(cuid()) // Unique ID using cuid()
-  userId             String  @map("user_id") // Foreign key mapping to User model
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id") // Foreign key for provider account
-  refresh_token      String? @db.Text // Optional field with Text type
-  access_token       String? @db.Text // Optional field with Text type
-  expires_at         Int? // Optional field
-  token_type         String? // Optional field
-  scope              String? // Optional field
-  id_token           String? @db.Text // Optional field with Text type
-  session_state      String? // Optional field
-  refresh_token_expires_in  Int?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User model with cascade delete
+  refresh_token_expires_in Int?
 
-  @@unique([provider, providerAccountId]) // Unique constraint on provider and providerAccountId
-  @@map("accounts") // Maps to the table 'accounts'
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
-// Session model definition
 model Session {
-  id           String   @id @default(cuid()) // Unique ID using cuid()
-  sessionToken String   @unique @map("session_token") // Unique session token
-  userId       String   @map("user_id") // Foreign key mapping to User model
-  expires      DateTime // Expiry date and time
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User model with cascade delete
-
-  @@map("sessions") // Maps to the table 'sessions'
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// User model definition
 model User {
-  id            String    @id @default(cuid()) // Unique ID using cuid()
-  name          String? // Optional field
-  email         String?   @unique // Unique email field
-  emailVerified DateTime? @map("email_verified") // Optional field with mapping
-  image         String? // Optional field
-  accounts      Account[] // Relation to Account model
-  sessions      Session[] // Relation to Session model
-
-  @@map("users") // Maps to the table 'users'
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
 }
 
-// VerificationToken model definition
-model VerificationToken {
-  identifier String // Identifier for the token
-  token      String // Token value
-  expires    DateTime // Expiry date and time
+model Movie {
+  id            Int         @id
+  imageString   String
+  title         String
+  age           Int
+  duration      Float
+  overview      String
+  release       Int
+  videoSource   String
+  category      String
+  youtubeString String
+  WatchLists    WatchList[]
 
-  @@unique([identifier, token]) // Unique constraint on identifier and token
-  @@map("verificationtokens") // Maps to the table 'verificationtokens'
+  createdAt DateTime @default(now())
+}
+
+model WatchList {
+  id     String @id @default(uuid())
+  userId String
+
+  Movie   Movie? @relation(fields: [movieId], references: [id])
+  movieId Int?
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
